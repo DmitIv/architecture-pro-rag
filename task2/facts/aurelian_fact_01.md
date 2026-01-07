@@ -1,0 +1,2 @@
+# Fact 01: The Birth of the Aurelian Continuum
+The Aurelian Continuum did not originate from an explosion or natural cosmological event. It emerged when an ancient meta-civilization attempted to catalogue every possible state of existence using a universal classification system. When the system exceeded finite representation, the overflow manifested as a self-sustaining reality. This failure became known as the Primary Desynchronization, a reference point repeatedly cited in later temporal studies (see Fact 07 and Fact 19).

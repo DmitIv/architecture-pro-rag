@@ -1,0 +1,2 @@
+# Fact 02: The Enumerators
+The creators of the original catalog were known as the Enumerators. They were not a species, but a protocol—an ideology of perfect classification implemented across biological minds and machine substrates. Identity among the Enumerators was defined solely by adherence to the protocol. Their disappearance left behind fragments of logic still embedded in artifacts across the Continuum, many of which continue to destabilize local reality (see Fact 11 and Fact 25).
