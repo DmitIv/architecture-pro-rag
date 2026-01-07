@@ -1,6 +1,8 @@
 #! /usr/bin/env python3
 
 import asyncio
+import os
+import string
 from functools import cache
 from pathlib import Path
 from typing import Iterator, NamedTuple
@@ -147,7 +149,7 @@ def get_rag_settings() -> RAGSettings:
 
 class RAG:
     _DEEPSEEK_MODEL_NAME = "deepseek-chat"
-    
+
     _SYSTEM_PROMPT = """
 You are a bot assistant for the universe "The Aurelian". Your task is to answer user questions accurately and concisely, using **only** the provided facts.
 
@@ -197,10 +199,25 @@ Answer:
             model=self._DEEPSEEK_MODEL_NAME,
             api_key=settings.deepseek_api_key,
         )
+        self._logs_file = Path("logs.csv")
+        if self._logs_file.exists() and self._logs_file.is_file():
+            os.remove(self._logs_file)
+        self._write_to_log("query", "result", "sources", "length", "status")
 
-    def _get_relevant_context(self, query: str) -> str:
+    def _write_to_log(
+        self, query: str, result: str, sources: str, length: str, status: str
+    ) -> None:
+        with open(self._logs_file, "a") as log_file:
+            log_file.write(",".join([query, result, sources, length, status]))
+            log_file.write("\n")
+
+    def _get_relevant_context(self, query: str) -> tuple[str, str]:
         facts = self._index.query(query, n=self._context_depth)
-        return "\n\n".join(f"Fact name: {fact.name}\nText: {fact.data}" for fact in facts)
+        context = "\n\n".join(
+            f"Fact name: {fact.name}\nText: {fact.data}" for fact in facts
+        )
+        sources = ";".join(fact.name for fact in facts)
+        return context, sources
 
     def _prepare_model_prompt(self, query: str, context: str) -> list[dict[str, str]]:
         query = f"Context:\n```\n{context}\n```\nQuery:\n{query}"
@@ -216,12 +233,25 @@ Answer:
         ]
 
     def __call__(self, user_query: str) -> str:
-        context = self._get_relevant_context(user_query)
+        context, sources = self._get_relevant_context(user_query)
         answer = self._llm.invoke(
             self._prepare_model_prompt(user_query, context)
         ).pretty_repr()
+        status = "success"
         if "i don't know" in answer.lower():
-            print(f"Query without answer: {user_query}")
+            answer = "I don't know."
+            status = "failure"
+        self._write_to_log(
+            repr(user_query),
+            repr(
+                answer.translate(str.maketrans("", "", string.punctuation)).replace(
+                    "\n", ""
+                )
+            ),
+            repr(sources),
+            str(len(answer)),
+            status,
+        )
         return answer
 
 

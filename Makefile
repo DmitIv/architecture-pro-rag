@@ -12,3 +12,7 @@ compute-index: install
 .PHONY: run-bot
 run-bot: install
 	facts_base_dir=task2/facts index_path=facts-rag poetry run task4/bot.py
+
+.PHONY: evaluate-accuracy
+evaluate-accuracy: install
+	poetry run task7/eval.py
