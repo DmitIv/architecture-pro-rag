@@ -1,0 +1,1 @@
+0 */12 * * * poetry run ./update.py ../task2/facts
